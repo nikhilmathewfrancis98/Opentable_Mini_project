@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".SplashScreen">
+
+
+    <TextView
+        android:gravity="center_horizontal"
+        android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="50dp"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:text="SignUp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/textViewname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name:"
+                />
+            <EditText
+                android:layout_width="match_parent"
+                android:background="@drawable/roundededge"
+                android:layout_height="wrap_content"
+                android:id="@+id/editname"
+                android:padding="5dp"
+                android:hint="Enter Name"
+                android:paddingBottom="20dp"/>
+
+            <TextView
+                android:id="@+id/textViewusrname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username:"
+                android:paddingTop="20dp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:background="@drawable/roundededge"
+                android:layout_height="wrap_content"
+                android:id="@+id/usrname"
+                android:hint="Enter Username"
+                android:padding="5dp"
+                />
+
+            <TextView
+                android:id="@+id/textViewPasswd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password:"
+                android:paddingTop="20dp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/roundededge"
+                android:id="@+id/password"
+                android:hint="Enter Password"
+                android:inputType="textPassword"
+                android:padding="5dp"
+                />
+
+            <TextView
+                android:id="@+id/textViewconfirmpsswd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm Password:"
+                android:paddingTop="20dp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/confpswd"
+                android:hint="Confirm your Password"
+                android:background="@drawable/roundededge"
+                android:inputType="textPassword"
+                android:padding="5dp"
+                />
+
+            <android.widget.Button
+                android:id="@+id/button"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Signup"
+                android:background="@drawable/roundbutton"
+                android:layout_marginTop="20dp"
+                />
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
