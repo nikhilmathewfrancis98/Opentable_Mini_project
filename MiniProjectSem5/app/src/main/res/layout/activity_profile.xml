@@ -22,7 +22,8 @@
         android:orientation="vertical"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:padding="20dp"
@@ -58,6 +59,7 @@
                 android:hint="Enter Username"
                 android:padding="5dp"
                 />
+
             <TextView
                 android:id="@+id/textbio"
                 android:layout_width="wrap_content"
@@ -65,14 +67,17 @@
                 android:text="Bio:"
                 android:paddingTop="20dp"/>
 
-            <TextView
-                android:id="@+id/bio"
+            <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="50dp"
                 android:background="@drawable/roundededge"
+                android:layout_height="wrap_content"
+                android:id="@+id/bio"
+                android:padding="5dp"
                 />
         </LinearLayout>
 
     </LinearLayout>
+    <include layout="@layout/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

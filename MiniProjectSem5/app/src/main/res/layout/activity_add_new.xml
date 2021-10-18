@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/layoutpading"
+    tools:context=".AddNewActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Restaurent name:"
+                />
+            <EditText
+                android:layout_width="match_parent"
+                android:background="@drawable/roundededge"
+                android:layout_height="wrap_content"
+                android:id="@+id/Resname"
+                android:padding="5dp"
+                android:paddingBottom="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Description:"
+                android:paddingTop="20dp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:background="@drawable/roundededge"
+                android:layout_height="wrap_content"
+                android:id="@+id/desc"
+                android:padding="5dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#Tags:"
+                android:paddingTop="20dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:background="@drawable/roundededge"
+                android:layout_height="wrap_content"
+                android:id="@+id/tags"
+                android:padding="5dp"
+                />
+        </LinearLayout>
+        <fragment
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:id="@+id/googleMap"
+            tools:context=".MapsActivity"
+            android:layout_marginTop="20dp"
+            android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingVertical="10dp"
+                android:text="Restaurant images:"/>
+            <Button
+                android:id="@+id/addButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="Add"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/DodgerBlue"
+                android:text="Upload"/>
+
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_marginTop="10dp"
+            android:id="@+id/horizontal_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:id="@+id/linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+            </LinearLayout>
+
+        </HorizontalScrollView>
+    </LinearLayout>
+
+</LinearLayout>
