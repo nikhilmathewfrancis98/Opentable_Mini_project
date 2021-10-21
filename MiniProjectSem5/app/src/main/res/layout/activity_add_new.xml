@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/layoutpading"
+    android:orientation="vertical"
     tools:context=".AddNewActivity">
-
+    <ScrollView
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        >
-
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
@@ -60,55 +59,60 @@
                 />
         </LinearLayout>
         <fragment
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="300dp"
             android:id="@+id/googleMap"
             tools:context=".MapsActivity"
             android:layout_marginTop="20dp"
+            class="com.google.android.gms.maps.SupportMapFragment"
             android:name="com.google.android.gms.maps.SupportMapFragment" />
-
-
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_marginTop="15dp"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingVertical="10dp"
-                android:text="Restaurant images:"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
             <Button
-                android:id="@+id/addButton"
+                android:id="@+id/videoBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:text="Add"/>
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/DodgerBlue"
-                android:text="Upload"/>
+                android:layout_marginLeft="@dimen/item_margin_horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="@dimen/item_margin_horizontal"
+                android:minHeight="56dp"
+                android:text="Add Video"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"/>
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:id="@+id/videoThumb"/>
 
         </LinearLayout>
+        <Button
+            android:id="@+id/imgBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/item_margin_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="@dimen/item_margin_horizontal"
+            android:minHeight="56dp"
+            android:text="Add images"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"/>
 
-        <HorizontalScrollView
-            android:layout_marginTop="10dp"
-            android:id="@+id/horizontal_scroll"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"/>
 
-            <LinearLayout
-                android:id="@+id/linear"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-            </LinearLayout>
-
-        </HorizontalScrollView>
     </LinearLayout>
-
+    </ScrollView>
+<include
+layout="@layout/bottom_navigation"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"/>
 </LinearLayout>

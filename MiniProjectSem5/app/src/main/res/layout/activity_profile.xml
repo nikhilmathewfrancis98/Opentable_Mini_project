@@ -8,14 +8,24 @@
     android:gravity="center_horizontal"
     tools:context=".ProfileActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profilePhoto"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/account_circle"
+        app:civ_border_color="@color/LightGrey"
+        app:civ_border_width="2dp" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/account_circle"
-        tools:layout_editor_absoluteY="74dp" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:text="Change Profile Photo"
+        android:textColor="@color/Blue"
+        android:textSize="16sp" />
 
     <LinearLayout
         android:layout_width="match_parent"

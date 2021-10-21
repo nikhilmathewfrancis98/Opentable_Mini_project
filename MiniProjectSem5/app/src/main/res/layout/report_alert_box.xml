@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:padding="@dimen/layoutpading"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Report post"
+        android:id="@+id/reportPost"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/content">
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tell us more" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <RadioButton
+                android:id="@+id/radioInApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Inappropriate content" />
+
+            <RadioButton
+                android:id="@+id/radioFakeReview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fake review" />
+
+            <RadioButton
+                android:id="@+id/radioNotInterested"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Not Interested" />
+
+            <RadioButton
+                android:id="@+id/radioOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Other" />
+
+        </RadioGroup>
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="Submit" />
+    </LinearLayout>
+
+</LinearLayout>

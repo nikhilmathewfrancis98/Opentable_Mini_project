@@ -3,7 +3,7 @@
     <style name="Theme.OpenTable" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#48B131</item>
-        <item name="colorPrimaryVariant">#517DD6</item>
+        <item name="colorPrimaryVariant">#48B131</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>

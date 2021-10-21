@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_marginVertical="5dp"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/postedges"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp"
+
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp">
+
+<!--            <de.hdodenhof.circleimageview.CircleImageView-->
+<!--                android:id="@+id/user_img"-->
+<!--                android:layout_width="40dp"-->
+<!--                android:layout_height="40dp"-->
+<!--                app:civ_border_color="@color/LightGrey"-->
+<!--                app:civ_border_width="0.5dp"-->
+<!--                android:layout_gravity="center_vertical"/>-->
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Restaurant name- Title"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"/>
+
+            <ImageView
+                android:id="@+id/option"
+                android:layout_width="20dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/more_icon"
+                android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textStyle="bold"
+            android:textColor="@color/Gray"
+            android:textSize="13sp"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"/>
+       <ImageView
+           android:layout_width="match_parent"
+           android:layout_height="300dp"
+           android:id="@+id/post_image"/>
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+           <LinearLayout
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:orientation="horizontal">
+               <RelativeLayout
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content">
+
+                   <ImageView
+                       android:layout_width="40dp"
+                       android:layout_height="wrap_content"
+                       android:id="@+id/img_heart"
+                       android:src="@drawable/favorite_outline"
+                       android:visibility="visible"
+                       android:layout_centerInParent="true"/>
+
+                   <ImageView
+                       android:id="@+id/img_heart_red"
+                       android:layout_width="40dp"
+                       android:layout_height="wrap_content"
+                       android:layout_centerInParent="true"
+                       android:src="@drawable/favorite_filled"
+                       android:visibility="invisible" />
+               </RelativeLayout>
+
+               <ImageView
+                   android:layout_width="40dp"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/img_comments"
+                   android:src="@drawable/comment_icon" />
+               <ImageView
+                   android:layout_width="40dp"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/img_bookmark"
+                   android:src="@drawable/bookmark_icon"/>
+           </LinearLayout>
+            <ImageView
+                android:id="@+id/img_save"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="0dp"
+                android:src="@drawable/badge" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_likes"
+            android:text="Likes"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txt_caption"
+            android:text="Description: Lorem ipsum dolar simat blah "
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="5dp"/>
+        <TextView
+            android:id="@+id/txt_tags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:text="Tags"
+            android:textColor="#3648AC"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>
