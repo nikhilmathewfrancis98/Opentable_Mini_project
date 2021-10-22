@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/postedges"
+    android:paddingVertical="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="5dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_img"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            app:civ_border_width="0.5dp"
+            app:civ_border_color="@color/Gray"
+            android:src="@drawable/account_circle"
+            android:layout_marginStart="5dp"/>
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UserName"
+                android:textSize="14sp"
+                android:layout_weight="1"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="8dp"
+                android:textColor="@color/black"/>
+                <TextView
+                    android:id="@+id/postTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="1d"
+                    android:textColor="@color/LightGrey"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Comment is here and is like this"
+            android:textColor="@color/black"/>
+
+        <RelativeLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/img_heart"
+                android:src="@drawable/favorite_outline"
+                android:visibility="visible"/>
+
+            <ImageView
+                android:id="@+id/img_heart_red"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/favorite_filled"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/countLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/img_heart_red"
+                android:text="2" />
+
+            <ImageView
+                android:id="@+id/reportComment"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/countLikes"
+                android:src="@drawable/report_icon" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

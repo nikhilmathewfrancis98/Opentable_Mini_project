@@ -201,7 +201,7 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
 
     // adapter for image
     private  static class UriAdapter extends RecyclerView.Adapter<UriAdapter.UriViewHolder> {
-        List<Uri> mUris = new ArrayList<>();
+        List<Uri> mUris ;
         private List<String> mPaths;
 
         void setData(List<Uri> uris, List<String> paths) {

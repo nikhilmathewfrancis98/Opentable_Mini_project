@@ -1,14 +1,18 @@
 package com.example.opentable;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,17 +21,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.Inflater;
 
-public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostViewHolder>{
+public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostViewHolder>
+        implements Filterable {
 
     List<ModalPost> postsList;
+    List<ModalPost> exampleList;
     Context context;
     // constructor
     public HomePostAdapter(List<ModalPost> postList, Context context)
     {
-        this.postsList = postList;
+        this.postsList = new ArrayList<>(postList);
+        this.exampleList = postList;
         this.context = context;
     }
 
@@ -43,12 +51,13 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
     public void onBindViewHolder(@NonNull HomePostAdapter.PostViewHolder holder, int position) {
 
         int p = holder.getAbsoluteAdapterPosition();
-        holder.title.setText(postsList.get(p).getTitle());
-        holder.location.setText(postsList.get(p).getLocation());
-        holder.txt_likes.setText(Integer.toString(postsList.get(p).getTxt_likes()));
-        holder.txt_caption.setText(postsList.get(p).getTxt_caption());
-        holder.txt_tags.setText(postsList.get(p).getTxt_tags());
-        Bitmap bitmap = BitmapFactory.decodeFile(postsList.get(p).getPost_image());
+        holder.title.setText(exampleList.get(p).getTitle());
+        holder.location.setText(exampleList.get(p).getLocation());
+        holder.txt_likes.setText(Integer.toString(exampleList.get(p).getTxt_likes()));
+        holder.txt_caption.setText(exampleList.get(p).getTxt_caption());
+        holder.txt_tags.setText(exampleList.get(p).getTxt_tags());
+        Bitmap bitmap = BitmapFactory.decodeFile(exampleList.get(p).getPost_image());
+        holder.post_image.setImageBitmap(bitmap);
 
         ToggleLove(holder, p);
 
@@ -56,8 +65,8 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             @Override
             public void onClick(View view) {
                 ToggleLove(holder, p);
-                postsList.get(p).setFavorite(!postsList.get(p).getFavorite());
-                postsList.get(p).updateLikes(-1);
+                exampleList.get(p).setFavorite(!exampleList.get(p).getFavorite());
+                exampleList.get(p).updateLikes(-1);
                 notifyDataSetChanged();
             }
         });
@@ -66,13 +75,12 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             @Override
             public void onClick(View view) {
                 ToggleLove(holder, p);
-                postsList.get(p).setFavorite(!postsList.get(p).getFavorite());
-                postsList.get(p).updateLikes(1);
+                exampleList.get(p).setFavorite(!exampleList.get(p).getFavorite());
+                exampleList.get(p).updateLikes(1);
                 notifyDataSetChanged();
             }
         });
 
-        holder.post_image.setImageBitmap(bitmap);
         holder.option.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,11 +88,24 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             }
         });
 
+        holder.img_comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, CommentActivity.class);
+                context.startActivity(intent);
+            }
+        });
+
     }
 
     @Override
     public int getItemCount() {
-        return postsList.size();
+        return exampleList.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return exampleFilter;
     }
 
     public class PostViewHolder extends RecyclerView.ViewHolder  {
@@ -120,7 +141,7 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
 
     void ToggleLove(HomePostAdapter.PostViewHolder holder, int position)
     {
-        if(postsList.get(position).getFavorite())
+        if(exampleList.get(position).getFavorite())
         {
             holder.favorite_filled.setVisibility(View.VISIBLE);
             holder.favorite_outline.setVisibility(View.INVISIBLE);
@@ -165,5 +186,41 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             }
         });
     }
+
+    // filter the list of posts based on query (handle searching)
+    private final Filter exampleFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<ModalPost> filteredList = new ArrayList<>();
+            String filterPattern = "";
+
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(postsList);
+            } else {
+                filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (ModalPost item : postsList) {
+                    if (item.getTxt_tags().toLowerCase().contains(filterPattern)
+                            || item.getLocation().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
+                    }
+                }
+            }
+//            Log.d("hiui", Integer.toString(postsList.size()));
+//            Log.d("hiuii", filterPattern);
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            exampleList.clear();
+            // we are creating new songs list with the help of filtered results
+            exampleList.addAll((List) filterResults.values);
+            notifyDataSetChanged(); // notify the changes
+        }
+    };
 
 }
