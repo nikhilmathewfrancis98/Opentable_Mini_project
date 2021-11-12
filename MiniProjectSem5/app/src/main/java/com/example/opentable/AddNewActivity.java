@@ -96,7 +96,7 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
 
 
 //----------------------------------         google map    -----------------------------------------------
-        supportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.googleMap);
+        supportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.googleMapAddNew);
 
         //  permission granding
         client= LocationServices.getFusedLocationProviderClient(this);
@@ -195,6 +195,7 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
             Glide.with(this)
                     .load(Matisse.obtainResult(data).get(0))
                     .into(imgThumb);
+            imgThumb.setVisibility(View.VISIBLE);
         }
     }
 

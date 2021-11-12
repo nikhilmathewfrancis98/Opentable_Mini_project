@@ -61,7 +61,7 @@
         <fragment
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:id="@+id/googleMap"
+            android:id="@+id/googleMapAddNew"
             tools:context=".MapsActivity"
             android:layout_marginTop="20dp"
             class="com.google.android.gms.maps.SupportMapFragment"
@@ -83,6 +83,7 @@
                 android:textColor="@android:color/white"/>
 
             <ImageView
+                android:visibility="gone"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:id="@+id/videoThumb"/>

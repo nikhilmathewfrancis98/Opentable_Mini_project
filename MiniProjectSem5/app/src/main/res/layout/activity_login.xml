@@ -50,9 +50,9 @@
                 android:text="Password:"
                 android:paddingTop="20dp"/>
             <EditText
+                android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/password"
                 android:hint="Enter Password"
                 android:inputType="textPassword"
                 android:padding="5dp"
@@ -60,7 +60,7 @@
                />
 
             <android.widget.Button
-                android:id="@+id/button"
+                android:id="@+id/signInButton"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

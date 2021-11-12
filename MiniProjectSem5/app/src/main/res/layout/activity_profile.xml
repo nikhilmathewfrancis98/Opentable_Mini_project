@@ -8,7 +8,47 @@
     android:gravity="center_horizontal"
     tools:context=".ProfileActivity">
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp"
+        android:paddingRight="10dp"
+        android:background="#48B131">
+        <TextView
+            android:id="@+id/pageTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:id="@+id/editProfile"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/edit_profile"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/logoutOption"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            app:tint="@color/white"
+            android:src="@drawable/option_profile"/>
+
+    </LinearLayout>
+    <ScrollView
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/profilePhoto"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -17,15 +57,6 @@
         android:background="@drawable/account_circle"
         app:civ_border_color="@color/LightGrey"
         app:civ_border_width="2dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:text="Change Profile Photo"
-        android:textColor="@color/Blue"
-        android:textSize="16sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,49 +75,43 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name:"
+                android:text="Name"
                 />
-            <EditText
-                android:layout_width="match_parent"
-                android:background="@drawable/roundededge"
-                android:layout_height="wrap_content"
-                android:id="@+id/edname"
-                android:padding="5dp"
-                android:hint="Enter Name"
-                android:paddingBottom="20dp"/>
 
-            <TextView
-                android:id="@+id/usrname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Username:"
-                android:paddingTop="20dp"/>
-            <EditText
-                android:layout_width="match_parent"
-                android:background="@drawable/roundededge"
-                android:layout_height="wrap_content"
-                android:id="@+id/username"
-                android:hint="Enter Username"
-                android:padding="5dp"
-                />
+<!--            <TextView-->
+<!--                android:id="@+id/usrname"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Username"-->
+<!--                android:paddingTop="20dp"/>-->
 
             <TextView
                 android:id="@+id/textbio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bio:"
+                android:text="Bio"
                 android:paddingTop="20dp"/>
 
-            <EditText
-                android:layout_width="match_parent"
-                android:background="@drawable/roundededge"
-                android:layout_height="wrap_content"
-                android:id="@+id/bio"
-                android:padding="5dp"
-                />
-        </LinearLayout>
 
+        </LinearLayout>
     </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="40dp"
+            android:gravity="right">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My Posts"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/postsRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
     <include layout="@layout/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

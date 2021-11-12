@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "908076683772",
+    "project_id": "opentableproject",
+    "storage_bucket": "opentableproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908076683772:android:ea4e8012479a03bdd02279",
+        "android_client_info": {
+          "package_name": "com.example.opentable"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908076683772-l1c3h8pvng1uj1r203ksd3m3ehkp0c2u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.opentable",
+            "certificate_hash": "97a8b88a1f1ca6925c4e08193f3e0a57cc27d27e"
+          }
+        },
+        {
+          "client_id": "908076683772-75ebtnqqop58h78fbhpq916qv0u5mlkv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAldHZ_Og_GjdQfM-A0LUAdzn1yydnszdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908076683772-75ebtnqqop58h78fbhpq916qv0u5mlkv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

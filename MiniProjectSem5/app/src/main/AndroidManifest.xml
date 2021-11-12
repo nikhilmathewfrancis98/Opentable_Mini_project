@@ -10,6 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OpenTable">
         <activity
+            android:name=".EditProfile"
+            android:exported="false"
+            android:theme="@style/Theme.NoActionBar"
+            />
+        <activity
             android:name=".NearByRestaurantsActivity"
             android:exported="false" />
         <activity
@@ -24,7 +29,8 @@
         <activity
             android:name=".ProfileActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NoActionBar" />
         <activity
             android:name=".SignupActivity"
             android:exported="false"
@@ -52,6 +58,9 @@
         </activity>
 
         <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
     </application>
@@ -59,7 +68,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
