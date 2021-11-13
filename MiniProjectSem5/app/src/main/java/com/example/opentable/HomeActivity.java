@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -187,8 +189,13 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         bottomNavigationView.getMenu().findItem(R.id.home).setChecked(true);
+
+//        // Check if user is signed in (non-null). If in, then goto home page
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser == null){
+            Intent i = new Intent(HomeActivity.this, LoginActivity.class);
+            startActivity(i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        }
         super.onStart();
     }
-
-
     }

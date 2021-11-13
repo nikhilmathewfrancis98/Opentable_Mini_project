@@ -4,7 +4,8 @@ plugins {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
-
+// Apply the Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics'
 android {
     compileSdk 30
 
@@ -23,6 +24,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    // added for the purpose of profile image download
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -45,12 +53,15 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.firebase:firebase-firestore:24.0.0'
+    implementation 'com.google.firebase:firebase-database:20.0.2'
+    implementation 'com.google.firebase:firebase-storage:20.0.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.zhihu.android:matisse:0.5.3-beta3' // for image and video uploads
 
     implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation 'com.github.bumptech.glide:compiler:4.9.0'
 
 
 
@@ -59,12 +70,15 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.12'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    
+
     //CircleImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation platform('com.google.firebase:firebase-bom:29.0.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth:21.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    // FirebaseUI for Cloud Storage
+    implementation 'com.firebaseui:firebase-ui-storage:3.3.0'
 
 
 }

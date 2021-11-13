@@ -13,6 +13,7 @@
             android:name=".EditProfile"
             android:exported="false"
             android:theme="@style/Theme.NoActionBar"
+            android:screenOrientation="portrait"
             />
         <activity
             android:name=".NearByRestaurantsActivity"
@@ -69,7 +70,4 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
 </manifest>
