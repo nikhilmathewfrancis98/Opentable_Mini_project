@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +17,16 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +63,32 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
         holder.txt_likes.setText(Integer.toString(exampleList.get(p).getTxt_likes()));
         holder.txt_caption.setText(exampleList.get(p).getTxt_caption());
         holder.txt_tags.setText(exampleList.get(p).getTxt_tags());
-        Bitmap bitmap = BitmapFactory.decodeFile(exampleList.get(p).getPost_image());
-        holder.post_image.setImageBitmap(bitmap);
+//        Bitmap bitmap = BitmapFactory.decodeFile(exampleList.get(p).getPost_image());
+
+
+//        RequestOptions options =
+//                new RequestOptions()
+//                        .centerCrop()
+//                        .placeholder(R.drawable.bookmark_icon)
+//                        .error(R.drawable.add_btn);
+
+//----------------------------- LOADING IMAGES OF POSTS FROM FIREBASE -----------------------------------
+
+        // getting url of the required image and upon success, display the image in the image view using the received url
+        exampleList.get(p).getPost_image().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                String imageURL = uri.toString();
+                Glide.with(context).load(imageURL).into(holder.post_image); // display image using url
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+//------------------------------------------- ENDS HERE -------------------------------------------------
 
         ToggleLove(holder, p);
 

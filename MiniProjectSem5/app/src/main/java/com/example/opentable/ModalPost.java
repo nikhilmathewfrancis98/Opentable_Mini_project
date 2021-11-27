@@ -1,17 +1,19 @@
 package com.example.opentable;
 
+import com.google.firebase.storage.StorageReference;
+
 public class ModalPost {
-    String title, location, post_image,  img_comments,
+    String title, location, img_comments,
     img_bookmark, img_save, imageView, txt_caption, txt_tags;
+    StorageReference post_image; // FIREBASE store's storage reference of image to be displayed in posts
     boolean favorite;
     int txt_likes;
 
     public ModalPost(
-            String title, String location, String post_image,
+            String title, String location, StorageReference post_image,
             boolean favorite, int txt_likes, String txt_caption,
-            String txt_tags
-    )
-    {
+            String txt_tags){
+
          this.title  = title;
          this.location  = location;
          this.post_image  = post_image;
@@ -50,7 +52,7 @@ public class ModalPost {
         return location;
     }
 
-    public String getPost_image() {
+    public StorageReference getPost_image() {
         return post_image;
     }
 

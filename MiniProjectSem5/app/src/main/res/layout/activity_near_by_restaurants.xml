@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".NearByRestaurantsActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,4 +16,6 @@
         tools:context=".MapsActivity"
         class="com.google.android.gms.maps.SupportMapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
+    </LinearLayout>
 </LinearLayout>
+<!--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-->

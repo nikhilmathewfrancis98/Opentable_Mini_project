@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -33,9 +35,18 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -44,7 +55,10 @@ import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class AddNewActivity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
 
@@ -55,6 +69,17 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
     GoogleMap googleMap;
     FusedLocationProviderClient client;
     SupportMapFragment supportMapFragment;
+    Button upload;
+    double lat, longi;
+    FirebaseFirestore db;
+    HashMap<String, String> postMap;
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    List<Uri> globalImageUris;
+
+
+
+    EditText restName, description, tags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +89,12 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.imgBtn).setOnClickListener(this);
         findViewById(R.id.videoBtn).setOnClickListener(this);
 
-        imgThumb = findViewById(R.id.videoThumb);
+        restName = findViewById(R.id.Resname);
+        description = findViewById(R.id.desc);
+        tags = findViewById(R.id.tags);
 
+        imgThumb = findViewById(R.id.videoThumb);
+        globalImageUris = new ArrayList<>();
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,
@@ -114,6 +143,98 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
         supportMapFragment.getMapAsync(this);
 //----------------------------------------------------------------------------------------------------------
 
+
+
+//----------------------------------  FIREBASE CODE FOR ADDING NEW POST ---------------------------------------------------
+
+        // Getting current user
+        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ; // getting details of current user
+        upload = findViewById(R.id.upload); // upload button
+        postMap = new HashMap<>();
+
+
+
+        storage = FirebaseStorage.getInstance();
+
+
+
+        // upon clicking update button
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+//            Uploading values to database
+
+                // creating new Restaurant object, which contains (represents) the details of a post
+                // unlike the method of updating each and every field one by one,
+                // this is a cleaner approach to reset all the values of a user at once
+                RestaurantDetails restaurantDetails = new RestaurantDetails(
+                        restName.getText().toString(),
+                        description.getText().toString(),
+                        tags.getText().toString(),
+                        lat,
+                        longi
+                );
+
+                db = FirebaseFirestore.getInstance(); // gettting instence of firebase
+
+                // add new post in the posts collection with required details
+                db.collection("posts")
+                .add(restaurantDetails) // add a record with randomly generated post id value
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+
+                        // now get newly inserted random id and add it to the user_profile collection's post document
+                        String newPostId = documentReference.getId();
+                        postMap.put(newPostId, newPostId);
+
+                        db.collection("user_profile").document(currentFirebaseUser.getUid())
+                               .update("posts", postMap )
+                               .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                   @Override
+                                   public void onSuccess(Void unused) {
+                                       storageReference = storage.getReference().child("OpenTable/posts/"+newPostId+"/images/");
+
+                                       // for each uri in the globalImageUris arraylist, upload it into firebase
+                                        int i = 1;
+                                       for (Uri uri : globalImageUris) {
+                                           StorageReference storageReference2 = storageReference.child("/"+(i++));
+                                           storageReference2.putFile(uri)
+                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                                        // if task is successfull, then move from current activity
+                                                        startActivity(new Intent(AddNewActivity.this, HomeActivity.class));
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(AddNewActivity.this, "Error while uploading images", Toast.LENGTH_SHORT).show();
+
+                                                    }
+                                                });
+                                       }
+                                   }
+                               })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(AddNewActivity.this, "Failed to insert data", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
 
 
 
@@ -185,7 +306,7 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
 
             mAdapter.setData(Matisse.obtainResult(data), Matisse.obtainPathResult(data));
-
+            globalImageUris = Matisse.obtainResult(data);
         }else if (requestCode == 12 && resultCode == RESULT_OK) {
 
 
@@ -254,6 +375,9 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onMapReady(@NonNull GoogleMap googleMap) {
                             LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+                            lat = location.getLatitude();
+                            longi = location.getLongitude();
+
                             MarkerOptions options= new MarkerOptions().position(latLng).title("I am here");
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                             googleMap.addMarker(options);
@@ -296,6 +420,9 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title(latLng.latitude+", "+latLng.longitude);
+                lat = latLng.latitude;
+                longi = latLng.longitude;
+
                 googleMap.clear();
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
                 googleMap.addMarker(markerOptions);

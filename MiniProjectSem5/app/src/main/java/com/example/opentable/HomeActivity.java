@@ -21,12 +21,23 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
@@ -37,12 +48,25 @@ public class HomeActivity extends AppCompatActivity {
     ImageView locationIcon;
     TextView pageTitle;
     HomePostAdapter homePostAdapter;
+    CollectionReference listOfPosts;
+    FirebaseFirestore db;
+    RecyclerView recyclerView;
+
+    // Reference to Firebase Storage
+    StorageReference storageReference;
+    StorageReference st;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setTitle("OpenTable - Home");
         setContentView(R.layout.activity_home);
+
+
+        // initializing the list for posts
+        postList = new ArrayList<>();
+// --------------------------------- BOTTOM NAVIGATION VIEW --------------------------------------------------
+
         bottomNavigationView = findViewById(R.id.bottom_nav);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -57,52 +81,22 @@ public class HomeActivity extends AppCompatActivity {
                         intent = new Intent(HomeActivity.this, ProfileActivity.class);
                         startActivity(intent);
                         break;
-
-
                 }
                 return true;
             }
         });
 
+//------------------------------------ RECYCLER VIEW ADAPTER ---------------------------------------------
 
-        // setting up the list with required data
-        postList = new ArrayList<>();
-        postList.add(new ModalPost("title 01",
-                "tvm", "/storage/3230-3664/01_My Docs/Camera/church.jpg", true,
-                23,
-                "Something just like this is the description",
-                "#kanji, #chicken"));
 
-        postList.add(new ModalPost("title 02",
-                "kottayam", "/storage/3230-3664/01_My Docs/Camera/church.jpg", false,
-                10,
-                "Something just like this is the description",
-                "#biriyani, #chicken"));
-
-        postList.add(new ModalPost("title 04",
-                "alappuzha", "/storage/3230-3664/01_My Docs/Camera/church.jpg",
-                false, 14,
-                "Something just like this is the description",
-                "#appam, #chicken"));
-
-        postList.add(new ModalPost("title 05",
-                "kannur", "/storage/3230-3664/01_My Docs/Camera/church.jpg",
-                true, 155,
-                "Something just like this is the description",
-                "#biriyani, #chicken"));
-
-        postList.add(new ModalPost("title 06",
-                "tvm", "/storage/3230-3664/01_My Docs/Camera/church.jpg", false,
-                0,
-                "Something just like this is the description",
-                "#porotta, #chicken"));
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.posts);
+        // setting up the recycler view
+        recyclerView = (RecyclerView) findViewById(R.id.posts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
                 false));
         homePostAdapter = new HomePostAdapter(postList, this);
-        recyclerView.setAdapter(homePostAdapter);
+//        recyclerView.setAdapter(homePostAdapter);
 
+// ------------------------------------ SEARCH BUTTON ---------------------------------------------------
 
         searchViewButton = findViewById(R.id.searchIcon);
         searchCategory = findViewById(R.id.searchCategory); // (hidden searchView - search bar)
@@ -163,19 +157,19 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // filter the list using new search keyword
-                homePostAdapter.getFilter().filter(query);
+//                homePostAdapter.getFilter().filter(query); ----------------------- Note this
                 return false;
             }
 
             @Override // upon search text change
             public boolean onQueryTextChange(String newText) {
-//                Log.d("hiui", "ji");
                 // filter the list using new search keyword
-                homePostAdapter.getFilter().filter(newText);
+//                homePostAdapter.getFilter().filter(newText); ------------------------- Note this
                 return true;
             }
         });
 
+// --------------------------------  LOCATION BUTTON AT THE TOP -----------------------------------
         locationIcon = findViewById(R.id.locationIcon);
         locationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,18 +178,86 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+//---------------------------------- ONCREATE ENDS HERE ----------------------------------------------
     }
 
     @Override
     protected void onStart() {
         bottomNavigationView.getMenu().findItem(R.id.home).setChecked(true);
 
-//        // Check if user is signed in (non-null). If in, then goto home page
+//        Check if user is signed in (non-null). If in, then goto home page
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if(currentUser == null){
             Intent i = new Intent(HomeActivity.this, LoginActivity.class);
             startActivity(i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
+
+
+//-------------------------------- FIREBASE CODE FOR DISPLAYING POSTS ---------------------------------------
+
+         storageReference = FirebaseStorage.getInstance().getReference();
+        postList.clear();
+        // it is important to note that by just getting the records from firebase and adding it to an arraylist
+        // wont result in desired output
+        // this is because, the onComplete listener is an aynchronus method
+        // So arraylist will contain nothing after this method. Or in other words, the rest of the code will gets
+        // executed before the onComplete method gets executed, resulting in an empty arraylist
+        // the solution is to use callback method
+        // useful link: https://stackoverflow.com/questions/57330766/why-does-my-function-that-calls-an-api-return-an-empty-or-null-value
+        handleRecords(new Callback() {
+            @Override
+            public void myResponseCallback(QueryDocumentSnapshot document) {
+
+                Map<String, Object> mp = document.getData();
+
+                st = storageReference.child("OpenTable/posts/"+document.getId()+"/images/1");
+                postList.add(new ModalPost(
+                        mp.get("restaurant_name").toString(),
+                        mp.get("location").toString(),
+                        st,
+                        false,
+                        Integer.parseInt(mp.get("likesCount").toString()),
+                        mp.get("description").toString(),
+                        mp.get("tags").toString()));
+            }
+        });
         super.onStart();
     }
+
+// ---------------------- CALLBACK INTERFACE ------------------------------------
+    interface Callback {
+        void myResponseCallback(QueryDocumentSnapshot document);//whatever your return type is: string, integer, etc.
     }
+
+
+    // function to handle returned rows
+    public void handleRecords(final Callback callback)
+    {
+        db = FirebaseFirestore.getInstance();
+        db.collection("posts")
+                .orderBy("likesCount", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful())
+                        {
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
+                            {
+                                callback.myResponseCallback(document);
+
+                            }
+
+//                            homePostAdapter = new HomePostAdapter(postList, HomeActivity.this);
+                            recyclerView.setAdapter(homePostAdapter);
+                        }
+                        else
+                        {
+                            Log.d("Details", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+        }
+
+}

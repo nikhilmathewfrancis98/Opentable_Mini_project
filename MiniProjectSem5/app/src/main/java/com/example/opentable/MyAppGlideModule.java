@@ -11,7 +11,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
 
-// this class is required to load profile image
+// this class is required to load  images into imageviews from firebase storage
 // this file will be handled automatically by the glide compiler
 @GlideModule
 public class MyAppGlideModule extends AppGlideModule {

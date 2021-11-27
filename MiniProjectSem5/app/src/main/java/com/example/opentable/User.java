@@ -14,20 +14,4 @@ public class User {
         this.Password = Password;
         this.Bio = Bio;
     }
-
-//    public String getBio() {
-//        return Bio;
-//    }
-//
-//    public String getName() {
-//        return Name;
-//    }
-//
-//    public String getPassword() {
-//        return Password;
-//    }
-//
-//    public String getUsername() {
-//        return Username;
-//    }
 }
