@@ -219,7 +219,9 @@ public class HomeActivity extends AppCompatActivity {
                         false,
                         Integer.parseInt(mp.get("likesCount").toString()),
                         mp.get("description").toString(),
-                        mp.get("tags").toString()));
+                        mp.get("tags").toString(),
+                        FirebaseAuth.getInstance().getCurrentUser().getUid(), // current user id
+                        document.getId())); // current post id
             }
         });
         super.onStart();

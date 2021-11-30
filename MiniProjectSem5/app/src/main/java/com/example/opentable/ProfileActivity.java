@@ -100,24 +100,9 @@ public class ProfileActivity extends AppCompatActivity {
 //--------------------------------------------------------------------------------------------------------------------------------
 
         // Reference to Firebase Storage
-        storageReference =
-                FirebaseStorage.getInstance().getReference();
+        storageReference =  FirebaseStorage.getInstance().getReference();
         // getting reference to appropriate file location in firebase storage
-        StorageReference st = storageReference.child("OpenTable/Images/ProfilePicture/profile");
-
-//        storageReference.child("OpenTable/Images/ProfilePicture/profile").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//            @Override
-//            public void onSuccess(Uri uri) {
-//                Toast.makeText(ProfileActivity.this, "Got it", Toast.LENGTH_SHORT).show();
-//                // Got the download URL for 'users/me/profile.png'
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception exception) {
-//                // File not found
-//                Toast.makeText(ProfileActivity.this, exception.toString(), Toast.LENGTH_LONG).show();
-//            }
-//        });
+        StorageReference st = storageReference.child("OpenTable/Images/ProfilePicture/"+currentFirebaseUser.getUid()+"/profile.jpg");
 
         // getting url of the required image and upon success, display the image in the image view using the received url
         st.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -129,7 +114,7 @@ public class ProfileActivity extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Toast.makeText(ProfileActivity.this, "Failed to load profile image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProfileActivity.this, exception.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 

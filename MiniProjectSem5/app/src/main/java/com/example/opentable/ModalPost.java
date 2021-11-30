@@ -8,11 +8,14 @@ public class ModalPost {
     StorageReference post_image; // FIREBASE store's storage reference of image to be displayed in posts
     boolean favorite;
     int txt_likes;
+    String userId, postId;
 
     public ModalPost(
             String title, String location, StorageReference post_image,
             boolean favorite, int txt_likes, String txt_caption,
-            String txt_tags){
+            String txt_tags,
+            String userID,
+            String postId){
 
          this.title  = title;
          this.location  = location;
@@ -25,6 +28,9 @@ public class ModalPost {
          this.txt_likes  = txt_likes;
          this.txt_caption  = txt_caption;
          this.txt_tags = txt_tags;
+         this.userId = userID;
+         this.postId = postId;
+
     }
 
     void updateLikes(int c)
@@ -74,5 +80,13 @@ public class ModalPost {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 }

@@ -38,9 +38,11 @@
         <entry key="..\:/Users/pmkmu/Desktop/Opentable_Mini_project/MiniProjectSem5/app/src/main/res/drawable/add_btn.xml" value="0.290625" />
         <entry key="..\:/Users/pmkmu/Desktop/Opentable_Mini_project/MiniProjectSem5/app/src/main/res/drawable/bookmark_icon.xml" value="0.290625" />
         <entry key="..\:/Users/pmkmu/Desktop/Opentable_Mini_project/MiniProjectSem5/app/src/main/res/layout/activity_add_new.xml" value="0.27447916666666666" />
+        <entry key="..\:/Users/pmkmu/Desktop/Opentable_Mini_project/MiniProjectSem5/app/src/main/res/layout/activity_comment.xml" value="0.27447916666666666" />
         <entry key="..\:/Users/pmkmu/Desktop/Opentable_Mini_project/MiniProjectSem5/app/src/main/res/layout/activity_edit_profile.xml" value="0.4" />
         <entry key="..\:/Users/pmkmu/Desktop/Opentable_Mini_project/MiniProjectSem5/app/src/main/res/layout/activity_near_by_restaurants.xml" value="0.27447916666666666" />
         <entry key="..\:/Users/pmkmu/Desktop/Opentable_Mini_project/MiniProjectSem5/app/src/main/res/layout/activity_profile.xml" value="0.14375" />
+        <entry key="..\:/Users/pmkmu/Desktop/Opentable_Mini_project/MiniProjectSem5/app/src/main/res/layout/comment_item.xml" value="0.27447916666666666" />
       </map>
     </option>
   </component>

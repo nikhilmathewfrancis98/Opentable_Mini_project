@@ -163,7 +163,7 @@ public class EditProfile extends AppCompatActivity {
         storageReference =
                 FirebaseStorage.getInstance().getReference();
         // getting reference to appropriate file location in firebase storage
-        StorageReference st = storageReference.child("OpenTable/Images/ProfilePicture/profile");
+        StorageReference st = storageReference.child("OpenTable/Images/ProfilePicture/"+currentFirebaseUser.getUid()+"/profile.jpg");
 
         // getting url of the required image and upon success, display the image in the image view using the received url
         st.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

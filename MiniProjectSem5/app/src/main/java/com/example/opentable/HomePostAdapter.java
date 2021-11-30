@@ -27,9 +27,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.Inflater;
 
 public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostViewHolder>
@@ -37,10 +44,14 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
 
     List<ModalPost> postsList;
     List<ModalPost> exampleList;
+    DocumentReference mDatabase;
+    FirebaseFirestore firestore;
+
     Context context;
     // constructor
     public HomePostAdapter(List<ModalPost> postList, Context context)
     {
+        this.firestore = FirebaseFirestore.getInstance();
         this.postsList = new ArrayList<>(postList);
         this.exampleList = postList;
         this.context = context;
@@ -63,8 +74,6 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
         holder.txt_likes.setText(Integer.toString(exampleList.get(p).getTxt_likes()));
         holder.txt_caption.setText(exampleList.get(p).getTxt_caption());
         holder.txt_tags.setText(exampleList.get(p).getTxt_tags());
-//        Bitmap bitmap = BitmapFactory.decodeFile(exampleList.get(p).getPost_image());
-
 
 //        RequestOptions options =
 //                new RequestOptions()
@@ -97,7 +106,11 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             public void onClick(View view) {
                 ToggleLove(holder, p);
                 exampleList.get(p).setFavorite(!exampleList.get(p).getFavorite());
+                mDatabase = firestore.collection("posts").document(exampleList.get(p).getPostId());
+                mDatabase.update("likesCount", exampleList.get(p).getTxt_likes()-1);
                 exampleList.get(p).updateLikes(-1);
+
+
                 notifyDataSetChanged();
             }
         });
@@ -107,6 +120,13 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             public void onClick(View view) {
                 ToggleLove(holder, p);
                 exampleList.get(p).setFavorite(!exampleList.get(p).getFavorite());
+
+
+
+
+                mDatabase = firestore.collection("posts").document(exampleList.get(p).getPostId());
+                mDatabase.update("likesCount", exampleList.get(p).getTxt_likes()+1);
+
                 exampleList.get(p).updateLikes(1);
                 notifyDataSetChanged();
             }
@@ -123,6 +143,7 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, CommentActivity.class);
+                intent.putExtra("postId", exampleList.get(p).getPostId());
                 context.startActivity(intent);
             }
         });

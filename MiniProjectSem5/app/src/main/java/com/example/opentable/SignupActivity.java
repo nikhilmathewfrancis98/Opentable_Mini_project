@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,11 +23,25 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SignupActivity extends AppCompatActivity {
+
+
+    /********************************************************************************************
+        NOTE THAT when user sings up for the first time, we need to create a folder in firebase storage to store
+        the user profile image.
+     ********************************************************************************************/
+
+
 
     FirebaseAuth firebaseAuth;
 //    FirebaseUser user;
@@ -72,9 +88,33 @@ public class SignupActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Toast.makeText(SignupActivity.this, "User profile created successfully", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                                    startActivity(intent);
+
+                                    // creating folder in the firebase storage with newly created user id for storing profile image
+                                    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+                                    StorageReference storageReference = firebaseStorage.getReference();
+
+                                    // the default image to be stored at the time of user signup
+                                    Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.drawable.badge);
+
+                                    // now put the default image into the firebase storage
+                                    storageReference
+                                            .child("OpenTable/Images/ProfilePicture/"+userID+"/profile")
+                                            .putFile(uri)
+                                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {                                                    
+                                                    Toast.makeText(SignupActivity.this, "User profile created successfully", Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                                                    startActivity(intent);
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(SignupActivity.this, "Error in signup !!", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
