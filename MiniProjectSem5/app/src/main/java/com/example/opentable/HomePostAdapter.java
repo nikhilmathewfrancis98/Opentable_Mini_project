@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -105,11 +106,19 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             @Override
             public void onClick(View view) {
                 ToggleLove(holder, p);
-                exampleList.get(p).setFavorite(!exampleList.get(p).getFavorite());
+                exampleList.get(p).setLiked(!exampleList.get(p).getLiked());
                 mDatabase = firestore.collection("posts").document(exampleList.get(p).getPostId());
                 mDatabase.update("likesCount", exampleList.get(p).getTxt_likes()-1);
                 exampleList.get(p).updateLikes(-1);
 
+
+                // adding current user id to the existing list of liked users if it dosen't exists
+                DocumentReference documentReference = FirebaseFirestore.getInstance()
+                        .collection("posts")
+                        .document(exampleList.get(p).getPostId().trim());
+
+                // Atomically remove from likedUsers arraylist
+                documentReference.update("likedUsers", FieldValue.arrayRemove(exampleList.get(p).getUserId()));
 
                 notifyDataSetChanged();
             }
@@ -119,10 +128,16 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             @Override
             public void onClick(View view) {
                 ToggleLove(holder, p);
-                exampleList.get(p).setFavorite(!exampleList.get(p).getFavorite());
+                exampleList.get(p).setLiked(!exampleList.get(p).getLiked());
 
 
+                // adding current user id to the existing list of liked users if it dosen't exists
+                DocumentReference documentReference = FirebaseFirestore.getInstance()
+                        .collection("posts")
+                        .document(exampleList.get(p).getPostId().trim());
 
+                // Atomically add a new region to the likedUsers arraylist
+                documentReference.update("likedUsers", FieldValue.arrayUnion(exampleList.get(p).getUserId()));
 
                 mDatabase = firestore.collection("posts").document(exampleList.get(p).getPostId());
                 mDatabase.update("likesCount", exampleList.get(p).getTxt_likes()+1);
@@ -135,7 +150,7 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
         holder.option.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAlert();
+                showAlert(p);
             }
         });
 
@@ -193,7 +208,7 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
 
     void ToggleLove(HomePostAdapter.PostViewHolder holder, int position)
     {
-        if(exampleList.get(position).getFavorite())
+        if(exampleList.get(position).getLiked())
         {
             holder.favorite_filled.setVisibility(View.VISIBLE);
             holder.favorite_outline.setVisibility(View.INVISIBLE);
@@ -208,7 +223,7 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
 
 
     // show alert for creation of new list
-    public void showAlert()
+    public void showAlert(int p)
     {
         LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         AlertDialog.Builder ab = new AlertDialog.Builder(context);
@@ -234,6 +249,16 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // adding current user id to the existing list of liked users if it dosen't exists
+                DocumentReference documentReference = FirebaseFirestore.getInstance()
+                        .collection("posts")
+                        .document(exampleList.get(p).getPostId().trim());
+
+                // Atomically add a new region to the likedUsers arraylist
+                documentReference.update("reportedUsers", FieldValue.arrayUnion(exampleList.get(p).getUserId()));
+                documentReference.update("reportCount", exampleList.get(p).getReportCount()+1);
+
                 alert.dismiss();
             }
         });

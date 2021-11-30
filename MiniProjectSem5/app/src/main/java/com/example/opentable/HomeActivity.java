@@ -210,6 +210,9 @@ public class HomeActivity extends AppCompatActivity {
             public void myResponseCallback(QueryDocumentSnapshot document) {
 
                 Map<String, Object> mp = document.getData();
+                ArrayList<String> likedUsers = (ArrayList<String>) mp.get("likedUsers");
+                String uId = FirebaseAuth.getInstance().getCurrentUser().getUid().trim();
+                boolean containsUser = likedUsers.contains(uId);
 
                 st = storageReference.child("OpenTable/posts/"+document.getId()+"/images/1");
                 postList.add(new ModalPost(
@@ -221,7 +224,10 @@ public class HomeActivity extends AppCompatActivity {
                         mp.get("description").toString(),
                         mp.get("tags").toString(),
                         FirebaseAuth.getInstance().getCurrentUser().getUid(), // current user id
-                        document.getId())); // current post id
+                        document.getId(),// current post id
+                        Integer.parseInt(mp.get("reportCount").toString()), // report count for this post
+                        containsUser
+                ));
             }
         });
         super.onStart();
