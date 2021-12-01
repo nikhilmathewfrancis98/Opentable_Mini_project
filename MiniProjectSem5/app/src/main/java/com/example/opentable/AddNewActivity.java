@@ -173,7 +173,9 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
                         description.getText().toString(),
                         tags.getText().toString(),
                         lat,
-                        longi
+                        longi,
+                        new ArrayList<String>(),
+                        new ArrayList<String>()
                 );
 
                 db = FirebaseFirestore.getInstance(); // gettting instence of firebase

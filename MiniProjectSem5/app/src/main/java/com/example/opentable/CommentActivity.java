@@ -1,30 +1,44 @@
 package com.example.opentable;
 
+import static java.lang.System.*;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.lang.reflect.Array;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +49,8 @@ public class CommentActivity extends AppCompatActivity {
     FirebaseFirestore db;
     String postId;
     RecyclerView recyclerView;
+    Button postComment;
+    EditText newComment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +58,10 @@ public class CommentActivity extends AppCompatActivity {
 
         commentList = new ArrayList<>();
         postId = getIntent().getStringExtra("postId"); // get the post id of the comment
+
+        postComment = findViewById(R.id.postComment);
+        newComment = findViewById(R.id.newComment);
+        db = FirebaseFirestore.getInstance();
 
         recyclerView = findViewById(R.id.commentsRecycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -89,11 +109,120 @@ public class CommentActivity extends AppCompatActivity {
                             containsUser, // current user liked this comment or not
                             (Timestamp)mp.get("time"),
                             postId,
-                            Integer.parseInt(mp.get("reportCount").toString())
+                            Integer.parseInt(mp.get("reportCount").toString()),
+                            likedUsers,
+                            (ArrayList<String>) mp.get("reportedUsers")
                         ));
 
             }
         });
+
+
+        postComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String enteredComment = newComment.getText().toString();
+
+                DocumentReference documentReference = db.collection("posts")
+                        .document(postId)
+                        .collection("comments")
+                        .document(currentUser.getUid());
+
+                documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()) // if current user has already commented then edit it
+                        {
+                            db.collection("posts")
+                                    .document(postId)
+                                    .collection("comments")
+                                    .document(currentUser.getUid())
+                                    .update("content", enteredComment )
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Toast.makeText(CommentActivity.this, "Comment added successfully", Toast.LENGTH_SHORT).show();
+                                            int i = 0;
+                                            for (ModelComment obj :
+                                                    commentList) {
+                                                if(obj.getProfileUrl().equals(currentUser.getUid()))
+                                                {
+                                                    commentList.get(i).setComment(enteredComment);
+                                                    break;
+                                                }
+                                                i++;
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(CommentActivity.this, "Failed to modify comment", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                        else
+                        {
+
+                            db.collection("posts")
+                                    .document(postId)
+                                    .collection("comments")
+                                    .document(currentUser.getUid())
+                                    .set(new ModelComment(
+                                            enteredComment,
+                                            currentUser.getUid(),
+                                            "Dummy username",
+                                            0,
+                                            false, // current user liked this comment or not
+                                            new Timestamp(Calendar.getInstance().getTime()),
+                                            postId,
+                                            0,
+                                            new ArrayList<String>(),
+                                            new ArrayList<String>()
+                                    ))
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            // creating new ModelComment object by fetching details of individual comments returned from firebase
+                                            commentList.add(new ModelComment(
+                                                    enteredComment,
+                                                    currentUser.getUid(),
+                                                    "Dummy username",
+                                                    0,
+                                                    false, // current user liked this comment or not
+                                                    new Timestamp(Calendar.getInstance().getTime()),
+                                                    postId,
+                                                    0,
+                                                    new ArrayList<String>(),
+                                                    new ArrayList<String>()
+
+                                            ));
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CommentActivity.this, "Failed to add new comment", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+
+
+
+
+            }
+        });
+
 
         super.onStart();
     }
@@ -104,10 +233,10 @@ public class CommentActivity extends AppCompatActivity {
     }
 
 
+
     // function to handle returned rows
     public void handleRecords(final HomeActivity.Callback callback)
     {
-        db = FirebaseFirestore.getInstance();
         if(postId != null)
         db.collection("posts").document(postId).collection("comments")
                 .get()
