@@ -79,6 +79,7 @@
                 android:id="@+id/edname"
                 android:padding="5dp"
                 android:hint="Enter Name"
+                android:singleLine="true"
                 android:paddingBottom="20dp"/>
 
             <TextView
@@ -93,6 +94,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/username"
                 android:hint="Enter Username"
+                android:singleLine="true"
                 android:padding="5dp"
                 />
             <TextView
@@ -107,6 +109,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/password"
                 android:hint="Password"
+                android:inputType="textPassword"
+                android:singleLine="true"
                 android:padding="5dp"
                 />
             <TextView
@@ -115,10 +119,12 @@
                 android:text="Confirm password:"
                 android:paddingTop="20dp"/>
             <EditText
+                android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:background="@drawable/roundededge"
                 android:layout_height="wrap_content"
                 android:id="@+id/confirm_password"
+                android:singleLine="true"
                 android:padding="5dp"
                 />
 

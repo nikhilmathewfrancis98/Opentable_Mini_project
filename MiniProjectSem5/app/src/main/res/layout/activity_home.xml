@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingVertical="10dp"
-        android:paddingRight="10dp"
+        android:paddingHorizontal="10dp"
         android:background="#48B131">
         <TextView
             android:id="@+id/pageTitle"
@@ -45,7 +45,31 @@
             android:src="@drawable/location_icon"/>
 
     </LinearLayout>
+
     <LinearLayout
+        android:id="@+id/emptyScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_weight="1"
+        >
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:src="@drawable/coffee_icon"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No Posts Yet !!"
+            android:gravity="center"
+            android:textSize="26sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/homePageMainContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"

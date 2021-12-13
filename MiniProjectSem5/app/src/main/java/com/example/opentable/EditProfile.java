@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,6 +47,9 @@ public class EditProfile extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     Uri filePathURI;
+    BottomNavigationView bottomNavigationView;
+    Intent intent;
+    private ProgressDialog dialog;
 
 
     EditText edName, userName, password, confirmPassword, bio;
@@ -54,6 +59,30 @@ public class EditProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+// --------------------------------- BOTTOM NAVIGATION VIEW --------------------------------------------------
+
+        bottomNavigationView = findViewById(R.id.bottom_nav);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int item_id = item.getItemId();
+                switch (item_id) {
+                    case R.id.ad_rev:
+                        intent = new Intent(EditProfile.this, AddNewActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.home:
+                        intent = new Intent(EditProfile.this, HomeActivity.class);
+                        startActivity(intent);
+                        break;
+                }
+                return true;
+            }
+        });
+
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading... please wait.");
+        dialog.show();
 
 
         firebaseAuth = FirebaseAuth.getInstance(); // getting firebase instance
@@ -87,6 +116,34 @@ public class EditProfile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+
+                if(
+                     edName.getText().toString().trim().equals("") ||
+                     userName.getText().toString().trim().equals("") ||
+                     password.getText().toString().trim().equals("") ||
+                     confirmPassword.getText().toString().trim().equals("") ||
+                     bio.getText().toString().trim().equals("")
+
+                )
+                {
+                    Toast.makeText(EditProfile.this, "Fields must not be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(password.getText().toString().length()<6)
+                {
+                    Toast.makeText(EditProfile.this, "Password must have atleast 6 characters", Toast.LENGTH_SHORT).show();
+                    return;
+
+                }
+
+                if(!password.getText().toString().trim().equals(confirmPassword.getText().toString().trim()))
+                {
+                    Toast.makeText(EditProfile.this, "Password dosen't match", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
 //            Uploading values to database
 
                 // creating new User object, which contains (represents) the details of a user
@@ -105,7 +162,7 @@ public class EditProfile extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() { // on successful resetting of values
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(EditProfile.this, "Updated successfully !!", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(EditProfile.this, "Updated successfully !!", Toast.LENGTH_SHORT).show();
                         // now move back
                         updateProfileImage(); // updating profile image
 
@@ -152,6 +209,7 @@ public class EditProfile extends AppCompatActivity {
                 } else {
                     Toast.makeText(EditProfile.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
                 }
+                if(dialog.isShowing()) dialog.dismiss();
             }
         });
 
@@ -163,7 +221,8 @@ public class EditProfile extends AppCompatActivity {
         storageReference =
                 FirebaseStorage.getInstance().getReference();
         // getting reference to appropriate file location in firebase storage
-        StorageReference st = storageReference.child("OpenTable/Images/ProfilePicture/"+currentFirebaseUser.getUid()+"/profile.jpg");
+        StorageReference st = storageReference.child("OpenTable/Images/ProfilePicture/"
+                +currentFirebaseUser.getUid().trim()+"/profile");
 
         // getting url of the required image and upon success, display the image in the image view using the received url
         st.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -223,7 +282,7 @@ public class EditProfile extends AppCompatActivity {
             // Defining the child of storageReference
             StorageReference ref
                     = storageReference
-                    .child("OpenTable/Images/ProfilePicture/profile");
+                    .child("OpenTable/Images/ProfilePicture/"+currentFirebaseUser.getUid().trim()+"/profile");
 
             // adding listeners on upload
             // or failure of image
@@ -283,5 +342,18 @@ public class EditProfile extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    @Override
+    protected void onStart() {
+        bottomNavigationView.getMenu().findItem(R.id.acc).setChecked(true);
+
+//        Check if user is signed in (non-null). If in, then goto home page
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Intent i = new Intent(EditProfile.this, LoginActivity.class);
+            startActivity(i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        }
+        super.onStart();
     }
 }

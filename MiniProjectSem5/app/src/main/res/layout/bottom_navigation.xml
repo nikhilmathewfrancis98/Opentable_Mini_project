@@ -8,6 +8,8 @@
         android:padding="2dp"
         android:background="@drawable/rounded_nav_bar"
         android:id="@+id/bottom_nav"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="5dp"
         android:elevation="3dp"
         android:layout_marginHorizontal="20dp"
         android:layout_width="match_parent"

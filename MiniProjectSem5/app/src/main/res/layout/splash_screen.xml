@@ -6,12 +6,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
+    android:background="@color/green"
     tools:context=".SplashScreen">
 
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginVertical="10dp"
+        android:src="@mipmap/app_logo"/>
     <TextView
-        android:id="@+id/textView"
+        android:fontFamily="monospace"
+        android:textStyle="bold"
+        android:textColor="@color/Blue"
+        android:textSize="20sp"
+        android:id="@+id/appname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Opentable" />
+        android:text="OpenTable" />
 </LinearLayout>

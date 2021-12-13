@@ -8,7 +8,11 @@
     android:padding="@dimen/layoutpading"
     tools:context=".SplashScreen">
 
-
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:src="@mipmap/app_logo"
+        android:layout_marginTop="10dp"/>
     <TextView
         android:gravity="center_horizontal"
         android:id="@+id/textViewTitle"
@@ -16,6 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="50dp"
         android:textSize="20sp"
+        android:textColor="#3F72D8"
+        android:textStyle="bold"
         android:text="Welcome to opentable homie!" />
 
     <LinearLayout
@@ -91,8 +97,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Signup here!"
-        android:textColor="#70DEFF"
+        android:textColor="#3F72D8"
         android:id="@+id/signup"
+
         />
 
 </LinearLayout>

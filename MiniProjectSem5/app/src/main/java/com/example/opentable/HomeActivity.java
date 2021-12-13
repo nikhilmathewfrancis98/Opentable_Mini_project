@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -17,6 +18,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +44,7 @@ import java.util.Objects;
 public class HomeActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     Intent intent;
-    List<ModalPost> postList;
+    public static  List<ModalPost> postList;
     SearchView searchCategory;
     ImageView searchViewButton;
     ImageView locationIcon;
@@ -55,6 +57,7 @@ public class HomeActivity extends AppCompatActivity {
     // Reference to Firebase Storage
     StorageReference storageReference;
     StorageReference st;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // initializing the list for posts
         postList = new ArrayList<>();
+
 // --------------------------------- BOTTOM NAVIGATION VIEW --------------------------------------------------
 
         bottomNavigationView = findViewById(R.id.bottom_nav);
@@ -94,6 +98,8 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
                 false));
         homePostAdapter = new HomePostAdapter(postList, this);
+
+
 //        recyclerView.setAdapter(homePostAdapter);
 
 // ------------------------------------ SEARCH BUTTON ---------------------------------------------------
@@ -153,23 +159,24 @@ public class HomeActivity extends AppCompatActivity {
         // upon search query text change
         searchCategory.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
-//            Log.d("hi", "ji");
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // filter the list using new search keyword
-//                homePostAdapter.getFilter().filter(query); ----------------------- Note this
+                homePostAdapter.getFilter().filter(query);// ----------------------- Note this
                 return false;
             }
 
             @Override // upon search text change
             public boolean onQueryTextChange(String newText) {
                 // filter the list using new search keyword
-//                homePostAdapter.getFilter().filter(newText); ------------------------- Note this
+                homePostAdapter.getFilter().filter(newText); //------------------------- Note this
                 return true;
             }
         });
 
 // --------------------------------  LOCATION BUTTON AT THE TOP -----------------------------------
+
+
         locationIcon = findViewById(R.id.locationIcon);
         locationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,6 +187,31 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 //---------------------------------- ONCREATE ENDS HERE ----------------------------------------------
+    }
+
+
+
+
+// --------------------------------- METHOD TO DISPLAY EMPTY SCREEN  ----------------------------------------
+    private void displayEmptyScreen(boolean display) {
+
+        if(display)
+        {
+            LinearLayout emptyScreen = findViewById(R.id.emptyScreen);
+            LinearLayout mainContent = findViewById(R.id.homePageMainContent);
+            emptyScreen.setVisibility(View.VISIBLE);
+            mainContent.setVisibility(View.GONE);
+        }
+        else
+        {
+            LinearLayout emptyScreen = findViewById(R.id.emptyScreen);
+            LinearLayout mainContent = findViewById(R.id.homePageMainContent);
+            emptyScreen.setVisibility(View.GONE);
+            mainContent.setVisibility(View.VISIBLE);
+
+
+        }
+
     }
 
     @Override
@@ -196,8 +228,12 @@ public class HomeActivity extends AppCompatActivity {
 
 //-------------------------------- FIREBASE CODE FOR DISPLAYING POSTS ---------------------------------------
 
-         storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
         postList.clear();
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading... please wait.");
+        dialog.show();
+
         // it is important to note that by just getting the records from firebase and adding it to an arraylist
         // wont result in desired output
         // this is because, the onComplete listener is an aynchronus method
@@ -226,10 +262,13 @@ public class HomeActivity extends AppCompatActivity {
                         FirebaseAuth.getInstance().getCurrentUser().getUid(), // current user id
                         document.getId(),// current post id
                         Integer.parseInt(mp.get("reportCount").toString()), // report count for this post
-                        containsUser
+                        containsUser,
+                        mp.get("userName").toString()
                 ));
             }
         });
+
+
         super.onStart();
     }
 
@@ -243,6 +282,8 @@ public class HomeActivity extends AppCompatActivity {
     public void handleRecords(final Callback callback)
     {
         db = FirebaseFirestore.getInstance();
+
+
         db.collection("posts")
                 .orderBy("likesCount", Query.Direction.DESCENDING)
                 .get()
@@ -258,14 +299,25 @@ public class HomeActivity extends AppCompatActivity {
                             }
 
 //                            homePostAdapter = new HomePostAdapter(postList, HomeActivity.this);
+
                             recyclerView.setAdapter(homePostAdapter);
+                            if(postList.size() == 0)
+                            {
+                                displayEmptyScreen(true);
+                            }
+                            else
+                            {
+                                displayEmptyScreen(false);
+                            }
                         }
                         else
                         {
                             Log.d("Details", "Error getting documents: ", task.getException());
                         }
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
                     }
                 });
         }
-
 }

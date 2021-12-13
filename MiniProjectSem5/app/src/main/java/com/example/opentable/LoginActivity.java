@@ -3,6 +3,7 @@ package com.example.opentable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -52,6 +53,16 @@ public class LoginActivity extends AppCompatActivity {
                 user_name = userName.getText().toString();
                 pass = password.getText().toString();
 
+                if(user_name.trim().equals("") ||
+                pass.trim().equals(""))
+                {
+                    Toast.makeText(LoginActivity.this, "Fields must not be emtpy", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                ProgressDialog dialog;
+                dialog = new ProgressDialog(LoginActivity.this);
+                dialog.setMessage("Loading... please wait.");
+                dialog.show();
                 mAuth.signInWithEmailAndPassword(user_name, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -63,6 +74,8 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         else
                             Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+
+                        if(dialog.isShowing()) dialog.dismiss();
                     }
                 });
             }

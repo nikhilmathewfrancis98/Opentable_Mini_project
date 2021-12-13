@@ -55,7 +55,7 @@ public class CommentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
-
+        setTitle("Comments");
         commentList = new ArrayList<>();
         postId = getIntent().getStringExtra("postId"); // get the post id of the comment
 
@@ -164,44 +164,61 @@ public class CommentActivity extends AppCompatActivity {
                         else
                         {
 
-                            db.collection("posts")
-                                    .document(postId)
-                                    .collection("comments")
-                                    .document(currentUser.getUid())
-                                    .set(new ModelComment(
-                                            enteredComment,
-                                            currentUser.getUid(),
-                                            "Dummy username",
-                                            0,
-                                            false, // current user liked this comment or not
-                                            new Timestamp(Calendar.getInstance().getTime()),
-                                            postId,
-                                            0,
-                                            new ArrayList<String>(),
-                                            new ArrayList<String>()
-                                    ))
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void unused) {
-                                            // creating new ModelComment object by fetching details of individual comments returned from firebase
-                                            commentList.add(new ModelComment(
-                                                    enteredComment,
-                                                    currentUser.getUid(),
-                                                    "Dummy username",
-                                                    0,
-                                                    false, // current user liked this comment or not
-                                                    new Timestamp(Calendar.getInstance().getTime()),
-                                                    postId,
-                                                    0,
-                                                    new ArrayList<String>(),
-                                                    new ArrayList<String>()
 
-                                            ));
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
+
+                            db.collection("user_profile").document(currentUser.getUid())
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
-                                        public void onFailure(@NonNull Exception e) {
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            String userName;
+
+                                            userName = documentSnapshot.getData().get("Name").toString();
+
+
+                                            db.collection("posts")
+                                                    .document(postId)
+                                                    .collection("comments")
+                                                    .document(currentUser.getUid())
+                                                    .set(new ModelComment(
+                                                            enteredComment,
+                                                            currentUser.getUid(),
+                                                            userName,
+                                                            0,
+                                                            false, // current user liked this comment or not
+                                                            new Timestamp(Calendar.getInstance().getTime()),
+                                                            postId,
+                                                            0,
+                                                            new ArrayList<String>(),
+                                                            new ArrayList<String>()
+                                                    ))
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            // creating new ModelComment object by fetching details of individual comments returned from firebase
+                                                            commentList.add(new ModelComment(
+                                                                    enteredComment,
+                                                                    currentUser.getUid(),
+                                                                    userName,
+                                                                    0,
+                                                                    false, // current user liked this comment or not
+                                                                    new Timestamp(Calendar.getInstance().getTime()),
+                                                                    postId,
+                                                                    0,
+                                                                    new ArrayList<String>(),
+                                                                    new ArrayList<String>()
+
+                                                            ));
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+
+                                                        }
+                                                    });
+
+
 
                                         }
                                     });

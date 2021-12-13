@@ -9,7 +9,9 @@ public class ModalPost {
     boolean favorite, liked;
     int txt_likes,reportCount;
     String userId, postId;
+    String userName;
 
+    public  ModalPost(){}
     public ModalPost(
             String title, String location, StorageReference post_image,
             boolean favorite, int txt_likes, String txt_caption,
@@ -17,7 +19,8 @@ public class ModalPost {
             String userID,
             String postId,
             int reportCount,
-            boolean liked){
+            boolean liked,
+            String userName){
 
          this.title  = title;
          this.location  = location;
@@ -34,6 +37,7 @@ public class ModalPost {
          this.postId = postId;
          this.reportCount = reportCount;
          this.liked = liked;
+         this.userName =userName;
     }
 
     void updateLikes(int c)
@@ -102,4 +106,28 @@ public class ModalPost {
     public void setLiked(boolean liked) {
         this.liked = liked;
     }
+
+    public void setPost_image(StorageReference post_image) {
+        this.post_image = post_image;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+    //    @Override
+//    protected ModalPost clone() throws CloneNotSupportedException {
+//        ModalPost clone = null;
+//        try
+//        {
+//            clone = (ModalPost) super.clone();
+//
+//            //Copy new date object to cloned method
+//            clone.setPost_image(this.getPost_image());
+//        }
+//        catch (CloneNotSupportedException e)
+//        {
+//            throw new RuntimeException(e);
+//        }
+//        return clone;
+//    }
 }

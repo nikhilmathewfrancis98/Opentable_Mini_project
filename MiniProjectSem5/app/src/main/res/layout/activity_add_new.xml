@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/layoutpading"
+    android:padding="10dp"
     android:orientation="vertical"
     tools:context=".AddNewActivity">
     <ScrollView
@@ -22,6 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Restaurent name:"
+
                 />
             <EditText
                 android:layout_width="match_parent"
@@ -29,7 +30,23 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/Resname"
                 android:padding="5dp"
+                android:singleLine="true"
                 android:paddingBottom="20dp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location:"
+                android:paddingTop="20dp"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:background="@drawable/roundededge"
+                android:layout_height="wrap_content"
+                android:id="@+id/location"
+                android:padding="5dp"
+                />
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -55,47 +72,46 @@
                 android:background="@drawable/roundededge"
                 android:layout_height="wrap_content"
                 android:id="@+id/tags"
+                android:singleLine="true"
                 android:padding="5dp"
                 />
         </LinearLayout>
         <fragment
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="400dp"
             android:id="@+id/googleMapAddNew"
             tools:context=".MapsActivity"
             android:layout_marginTop="20dp"
             class="com.google.android.gms.maps.SupportMapFragment"
             android:name="com.google.android.gms.maps.SupportMapFragment" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <Button
-                android:id="@+id/videoBtn"
-                android:layout_width="150sp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/item_margin_horizontal"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="@dimen/item_margin_horizontal"
-                android:minHeight="56dp"
-                android:text="Add Video"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"/>
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical">-->
+<!--            <Button-->
+<!--                android:id="@+id/videoBtn"-->
+<!--                android:layout_width="150sp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginLeft="@dimen/item_margin_horizontal"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:layout_marginRight="@dimen/item_margin_horizontal"-->
+<!--                android:minHeight="56dp"-->
+<!--                android:text="Add Video"-->
+<!--                android:textAllCaps="false"-->
+<!--                android:textColor="@android:color/white"/>-->
 
-            <ImageView
-                android:visibility="gone"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:id="@+id/videoThumb"/>
+<!--            <ImageView-->
+<!--                android:visibility="gone"-->
+<!--                android:layout_width="150dp"-->
+<!--                android:layout_height="150dp"-->
+<!--                android:id="@+id/videoThumb"/>-->
 
-        </LinearLayout>
+<!--        </LinearLayout>-->
         <Button
             android:id="@+id/imgBtn"
-            android:layout_width="150sp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/item_margin_horizontal"
             android:layout_marginTop="8dp"
-            android:layout_marginRight="@dimen/item_margin_horizontal"
             android:minHeight="56dp"
             android:text="Add images"
             android:textAllCaps="false"

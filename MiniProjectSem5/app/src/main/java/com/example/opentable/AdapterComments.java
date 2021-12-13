@@ -138,7 +138,7 @@ public class AdapterComments extends RecyclerView.Adapter<AdapterComments.ViewHo
 
         //
         // setting user image of each comment
-        storageReference.child("OpenTable/Images/ProfilePicture/"+commentList.get(p).getProfileUrl()+"/profile.jpg")
+        storageReference.child("OpenTable/Images/ProfilePicture/"+commentList.get(p).getProfileUrl()+"/profile.png")
                 .getDownloadUrl()
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override

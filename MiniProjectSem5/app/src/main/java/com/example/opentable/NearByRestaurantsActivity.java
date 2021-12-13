@@ -6,9 +6,13 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -17,31 +21,45 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class NearByRestaurantsActivity extends AppCompatActivity implements OnMapReadyCallback {
     GoogleMap googleMap;
     FusedLocationProviderClient client;
     SupportMapFragment supportMapFragment;
-    List<LatLng> latLngList;
+    List<ModalRestaurantBin> latLngList;
     FloatingActionButton moreButton;
+
+    FirebaseFirestore db;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_near_by_restaurants);
 
+        db = FirebaseFirestore.getInstance();
 
         latLngList = new ArrayList<>();
-        latLngList.add(new LatLng(8.545337, 76.908380));
-        latLngList.add(new LatLng(8.545846, 76.908192));
-        latLngList.add(new LatLng(8.545585, 76.908084));
-        latLngList.add(new LatLng(8.545547, 76.908418));
+
+
+
 //----------------------------------         google map    -----------------------------------------------
         supportMapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.googleMap);
 
@@ -68,14 +86,66 @@ public class NearByRestaurantsActivity extends AppCompatActivity implements OnMa
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
-        googleMap.clear();
-        for(LatLng latLng: latLngList)
-        {
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(latLng.latitude+", "+latLng.longitude);
-            googleMap.addMarker(markerOptions);
-        }
+
+        GoogleMap gmap = googleMap;
+
+        db.collection("restaurant")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful())
+                        {
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
+                            {
+                                Map<String, Object> mp = document.getData();
+                                GeoPoint geoPoint = (GeoPoint) mp.get("geo");
+                                if(geoPoint == null)
+                                    return;
+                                LatLng latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
+
+                                latLngList.add(
+                                        new ModalRestaurantBin(
+                                                latLng,
+                                                mp.get("name").toString(),
+                                                document.getId()));
+
+                            }
+                            googleMap.clear();
+                            for(ModalRestaurantBin latLng: latLngList)
+                            {
+                                MarkerOptions markerOptions = new MarkerOptions();
+                                markerOptions.position(latLng.getLatLng());
+
+                                markerOptions.title(latLng.getDocId());
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng.getLatLng(),15));
+                                googleMap.addMarker(markerOptions);
+                            }
+                        }
+                        else
+                        {
+                            Log.d("Details", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
+
+        // adding on click listener to marker of google maps.
+        gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                if(marker.getTitle().equals("I am here"))
+                    return false;
+
+                Intent intent = new Intent(NearByRestaurantsActivity.this, ViewRestaurantDetails.class);
+                intent.putExtra("docId", marker.getTitle());
+                startActivity(intent);
+                return false;
+            }
+        });
+
     }
 
     @SuppressLint("MissingPermission")
@@ -102,6 +172,51 @@ public class NearByRestaurantsActivity extends AppCompatActivity implements OnMa
             }
         });
 
+    }
+
+
+    @Override
+    protected void onStart() {
+
+
+
+
+
+
+
+
+
+        super.onStart();
+    }
+
+
+    public void handleRecords(Callback callback)
+    {
+
+        db.collection("restaurant")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful())
+                        {
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
+                            {
+                                callback.myResponseCallback(document);
+
+                            }
+                        }
+                        else
+                        {
+                            Log.d("Details", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    // ---------------------- CALLBACK INTERFACE ------------------------------------
+    interface Callback {
+        void myResponseCallback(QueryDocumentSnapshot document);//whatever your return type is: string, integer, etc.
     }
 
 

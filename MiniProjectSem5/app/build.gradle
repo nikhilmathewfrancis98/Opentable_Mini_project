@@ -81,4 +81,9 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
 
 
+    implementation 'com.github.smarteist:autoimageslider:1.3.9'
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+
 }

@@ -41,10 +41,10 @@
                 android:layout_marginStart="10dp"/>
 
             <ImageView
-                android:id="@+id/option"
+                android:id="@+id/deleteIcon"
                 android:layout_width="20dp"
                 android:layout_height="40dp"
-                app:srcCompat="@drawable/more_icon"
+                app:srcCompat="@drawable/delete_icon"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
         <TextView
@@ -62,17 +62,7 @@
            android:layout_width="match_parent"
            android:layout_height="300dp"
            android:id="@+id/post_image"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:paddingHorizontal="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="userName"
-                android:id="@+id/user_name"/>
-        </LinearLayout>
+
         <LinearLayout
 
             android:layout_width="match_parent"

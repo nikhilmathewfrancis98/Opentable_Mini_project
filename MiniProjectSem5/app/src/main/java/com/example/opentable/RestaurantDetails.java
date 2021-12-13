@@ -8,11 +8,14 @@ public class RestaurantDetails {
     public int likesCount, reportCount;
     public String title, location;
     public boolean badge;
+    public String userName;
     public ArrayList<String> likedUsers, reportedUsers;
 
     public RestaurantDetails(String restaurant_name, String description,
                              String tags, double latitude, double longitude,
-                             ArrayList<String> likedUsers, ArrayList<String> reportedUsers)
+                             ArrayList<String> likedUsers, ArrayList<String> reportedUsers,
+                             String location,
+                             String userName)
     {
         this.description = description;
         this.restaurant_name = restaurant_name;
@@ -26,7 +29,8 @@ public class RestaurantDetails {
 
         // title - this field must be added in the ui
         this.title = "title --";
-        this.location = "location";
+        this.location = location;
+        this.userName = userName;
     }
 
     // the required default constructor

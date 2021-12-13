@@ -3,6 +3,7 @@ package com.example.opentable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,14 +47,15 @@ public class SignupActivity extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
 //    FirebaseUser user;
-    String user_name, password,name, user_email;
-    EditText userMail, passWord, userName;
+    String user_name, password,name, user_email, confirm_password;
+    EditText userMail, passWord, userName, confirmPassword;
     Button signUP;
     FirebaseFirestore firestore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        setTitle("OpenTable");
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
@@ -60,14 +63,44 @@ public class SignupActivity extends AppCompatActivity {
         userMail = findViewById(R.id.usrname);
         passWord = findViewById(R.id.password);
         signUP = findViewById(R.id.signUp);
+        confirmPassword = findViewById(R.id.confpswd);
 
         signUP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+
+
                 user_email = userName.getText().toString(); // must be a valid email
                 password = passWord.getText().toString(); // must be >6 chars
-                user_name = userName.getText().toString();
+                user_name = userMail.getText().toString();
+                confirm_password = confirmPassword.getText().toString();
+                if(user_email.trim().equals("")||
+                        password.trim().equals("")||
+                        user_name.trim().equals("") ||
+                        confirm_password.trim().equals("")
+                ){
+                    Toast.makeText(SignupActivity.this, "Fields must not be empty", Toast.LENGTH_SHORT).show();
+                    return;
+
+                }
+
+                if(!password.equals(confirm_password))
+                {
+                    Toast.makeText(SignupActivity.this, "Password dosen't match", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(password.length()<6)
+                {
+                    Toast.makeText(SignupActivity.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+                    return;
+
+                }
+
+                ProgressDialog dialog = new ProgressDialog(SignupActivity.this);
+                dialog.setMessage("Please wait...");
+                dialog.show();
 
                 firebaseAuth.createUserWithEmailAndPassword(user_email, password)
                         .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
@@ -82,6 +115,7 @@ public class SignupActivity extends AppCompatActivity {
                             user.put("Name", user_name);
                             user.put("Username", user_email);
                             user.put("Password", password);
+                            user.put("Bio", "");
 
                             // now send the details to firebase
                             documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -94,7 +128,7 @@ public class SignupActivity extends AppCompatActivity {
                                     StorageReference storageReference = firebaseStorage.getReference();
 
                                     // the default image to be stored at the time of user signup
-                                    Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.drawable.badge);
+                                    Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.drawable.profile);
 
                                     // now put the default image into the firebase storage
                                     storageReference
@@ -104,7 +138,7 @@ public class SignupActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {                                                    
                                                     Toast.makeText(SignupActivity.this, "User profile created successfully", Toast.LENGTH_SHORT).show();
-                                                    Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                                                    Intent intent = new Intent(SignupActivity.this, HomeActivity.class);
                                                     startActivity(intent);
                                                 }
                                             })
@@ -114,11 +148,12 @@ public class SignupActivity extends AppCompatActivity {
                                                     Toast.makeText(SignupActivity.this, "Error in signup !!", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
-
+                                    if(dialog.isShowing()) dialog.dismiss();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
+                                    if(dialog.isShowing()) dialog.dismiss();
                                     Toast.makeText(SignupActivity.this, "Failed to create user profile", Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -126,14 +161,13 @@ public class SignupActivity extends AppCompatActivity {
 
                         } else
                         {
-
+                            if(dialog.isShowing()) dialog.dismiss();
                             Toast.makeText(SignupActivity.this, "Error in sign up, check the values", Toast.LENGTH_SHORT).show();
-//                            FirebaseAuthException e = (FirebaseAuthException )task.getException();
-//                            Toast.makeText(SignupActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-//                                Log.d("error_is", "Failed Registration: "+e);
                         }
                     }
                 });
+
+
             }
         });
 
@@ -148,8 +182,5 @@ public class SignupActivity extends AppCompatActivity {
         if (currentUser != null) {
             currentUser.reload();
         }
-
-//        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-//        startActivity(intent);
     }
 }

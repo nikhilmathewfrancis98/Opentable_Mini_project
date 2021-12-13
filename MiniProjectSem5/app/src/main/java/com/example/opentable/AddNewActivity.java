@@ -4,6 +4,7 @@ package com.example.opentable;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -43,7 +45,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -55,10 +61,9 @@ import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class AddNewActivity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
 
@@ -79,7 +84,7 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
 
 
 
-    EditText restName, description, tags;
+    EditText restName, description, tags, location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,13 +92,15 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_add_new);
 
         findViewById(R.id.imgBtn).setOnClickListener(this);
-        findViewById(R.id.videoBtn).setOnClickListener(this);
+//        findViewById(R.id.videoBtn).setOnClickListener(this);
 
         restName = findViewById(R.id.Resname);
         description = findViewById(R.id.desc);
         tags = findViewById(R.id.tags);
+        location = findViewById(R.id.location);
 
-        imgThumb = findViewById(R.id.videoThumb);
+
+//        imgThumb = findViewById(R.id.videoThumb);
         globalImageUris = new ArrayList<>();
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
@@ -163,78 +170,195 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onClick(View view) {
 
-//            Uploading values to database
+                if(restName.getText().toString().equals(" ") ||
+                        restName.getText().toString().equals("") ||
+                        description.getText().toString().equals("") || description.getText().toString().equals(" ") ||
+                        tags.getText().toString().equals("") || tags.getText().toString().equals(" ")
+                        || location.getText().toString().equals(""))
+                {
+                    Toast.makeText(AddNewActivity.this, "Fields must not be empty!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                // creating new Restaurant object, which contains (represents) the details of a post
-                // unlike the method of updating each and every field one by one,
-                // this is a cleaner approach to reset all the values of a user at once
-                RestaurantDetails restaurantDetails = new RestaurantDetails(
-                        restName.getText().toString(),
-                        description.getText().toString(),
-                        tags.getText().toString(),
-                        lat,
-                        longi,
-                        new ArrayList<String>(),
-                        new ArrayList<String>()
-                );
+
+                ProgressDialog dialog = new ProgressDialog(AddNewActivity.this);
+                dialog.setMessage("Uploading... please wait.");
+                dialog.show();
 
                 db = FirebaseFirestore.getInstance(); // gettting instence of firebase
 
-                // add new post in the posts collection with required details
-                db.collection("posts")
-                .add(restaurantDetails) // add a record with randomly generated post id value
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+
+
+                // now fetch data from that table
+                db.collection("user_profile")
+                        .document(currentFirebaseUser.getUid()).get()
+                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
-                        // now get newly inserted random id and add it to the user_profile collection's post document
-                        String newPostId = documentReference.getId();
-                        postMap.put(newPostId, newPostId);
+                        // if the fetching is successfull then
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult(); //get the results
+                            String userName = "";
+                           userName = document.getData().get("Name").toString();
 
-                        db.collection("user_profile").document(currentFirebaseUser.getUid())
-                               .update("posts", postMap )
-                               .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                   @Override
-                                   public void onSuccess(Void unused) {
-                                       storageReference = storage.getReference().child("OpenTable/posts/"+newPostId+"/images/");
+//                            Uploading values to database
 
-                                       // for each uri in the globalImageUris arraylist, upload it into firebase
-                                        int i = 1;
-                                       for (Uri uri : globalImageUris) {
-                                           StorageReference storageReference2 = storageReference.child("/"+(i++));
-                                           storageReference2.putFile(uri)
-                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // creating new Restaurant object, which contains (represents) the details of a post
+                            // unlike the method of updating each and every field one by one,
+                            // this is a cleaner approach to reset all the values of a user at once
+                            RestaurantDetails restaurantDetails = new RestaurantDetails(
+                                    restName.getText().toString().trim(),
+                                    description.getText().toString().trim(),
+                                    tags.getText().toString(),
+                                    lat,
+                                    longi,
+                                    new ArrayList<String>(),
+                                    new ArrayList<String>(),
+                                    location.getText().toString().trim(),
+                                    userName
+                            );
 
-                                                        // if task is successfull, then move from current activity
-                                                        startActivity(new Intent(AddNewActivity.this, HomeActivity.class));
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Toast.makeText(AddNewActivity.this, "Error while uploading images", Toast.LENGTH_SHORT).show();
+                            // add new post in the posts collection with required details
+                            db.collection("posts")
+                                    .add(restaurantDetails) // add a record with randomly generated post id value
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference documentReference) {
 
-                                                    }
-                                                });
-                                       }
-                                   }
-                               })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
+                                            // now get newly inserted random id and add it to the user_profile collection's post document
+                                            String newPostId = documentReference.getId();
+//                        ArrayList<String> arrayList = new ArrayList<>();
+//                        arrayList.add(newPostId);
 
-                                    }
-                                });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(AddNewActivity.this, "Failed to insert data", Toast.LENGTH_SHORT).show();
+                                            db.collection("user_profile").document(currentFirebaseUser.getUid())
+                                                    .update("posts", FieldValue.arrayUnion(newPostId) )
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void unused) {
+                                                            storageReference = storage.getReference().child("OpenTable/posts/"+newPostId+"/images/");
+
+                                                            // for each uri in the globalImageUris arraylist, upload it into firebase
+                                                            int i = 1;
+                                                            for (Uri uri : globalImageUris) {
+                                                                StorageReference storageReference2 = storageReference.child("/"+(i++));
+                                                                storageReference2.putFile(uri)
+                                                                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                                            @Override
+                                                                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                                                                // if task is successfull, then move from current activity
+                                                                                startActivity(new Intent(AddNewActivity.this, HomeActivity.class));
+                                                                            }
+                                                                        })
+                                                                        .addOnFailureListener(new OnFailureListener() {
+                                                                            @Override
+                                                                            public void onFailure(@NonNull Exception e) {
+                                                                                Toast.makeText(AddNewActivity.this, "Error while uploading images", Toast.LENGTH_SHORT).show();
+
+                                                                            }
+                                                                        });
+                                                            }
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+
+                                                        }
+                                                    });
+
+                                            ModalForRestaurantTable modalForRestaurantTable = new ModalForRestaurantTable(
+                                                    new GeoPoint(lat, longi),
+                                                    location.getText().toString().trim(),
+                                                    restName.getText().toString().trim(),
+                                                    new ArrayList<String>( Arrays.asList(newPostId))
+                                            );
+
+                                            db.collection("restaurant").get()
+                                                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                                                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                                                            boolean flag = true;
+                                                            String restId = "";
+
+                                                            for (DocumentSnapshot docsnap :
+                                                                    list) {
+
+                                                                if(docsnap.getData().get("name").equals(restName.getText().toString()))
+                                                                {
+                                                                    flag = false;
+                                                                    restId = docsnap.getId();
+                                                                }
+                                                            }
+
+
+
+                                                            if(flag)
+                                                            {
+                                                                // if restaurant dosen't exists, then create a new one
+                                                                db.collection("restaurant")
+                                                                        .add(modalForRestaurantTable)
+                                                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                                            @Override
+                                                                            public void onSuccess(DocumentReference documentReference) {
+
+                                                                            }
+                                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Toast.makeText(AddNewActivity.this,
+                                                                                "Failed to add restaurant details", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+                                                            }
+                                                            else //else update the post's array only
+                                                            {
+                                                                // if restaurant dosen't exists, then create a new one
+                                                                db.collection("restaurant").document(restId)
+                                                                        .update("posts", FieldValue.arrayUnion(newPostId))
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void unused) {
+
+                                                                            }
+                                                                        })
+                                                                        .addOnFailureListener(new OnFailureListener() {
+                                                                            @Override
+                                                                            public void onFailure(@NonNull Exception e) {
+                                                                                Toast.makeText(AddNewActivity.this,
+                                                                                        "Failed to add restaurant details to existing one", Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        });
+                                                            }
+                                                            if(dialog.isShowing()) dialog.dismiss();
+                                                        }
+                                                    });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(AddNewActivity.this, "Failed to insert data", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                        } else {
+                            Toast.makeText(AddNewActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
+                        }
+
+
                     }
                 });
+
+
+//
+
+
+
+
             }
         });
 
@@ -281,21 +405,21 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
                         .autoHideToolbarOnSingleTap(true)
                         .forResult(REQUEST_CODE_CHOOSE);
                 break;
-            case R.id.videoBtn:
-
-                Matisse.from(AddNewActivity.this)
-                        .choose(MimeType.ofVideo(), false)
-                        .countable(true)
-                        .capture(true)
-                        .captureStrategy(
-                                new CaptureStrategy(true, "com.zhihu.matisse.sample.fileprovider", "test"))
-                        .maxSelectable(1)
-                        .showSingleMediaType(true)
-                        .originalEnable(true)
-                        .maxOriginalSize(10)
-                        .autoHideToolbarOnSingleTap(true)
-                        .forResult(12);
-                break;
+//            case R.id.videoBtn:
+//
+//                Matisse.from(AddNewActivity.this)
+//                        .choose(MimeType.ofVideo(), false)
+//                        .countable(true)
+//                        .capture(true)
+//                        .captureStrategy(
+//                                new CaptureStrategy(true, "com.zhihu.matisse.sample.fileprovider", "test"))
+//                        .maxSelectable(1)
+//                        .showSingleMediaType(true)
+//                        .originalEnable(true)
+//                        .maxOriginalSize(10)
+//                        .autoHideToolbarOnSingleTap(true)
+//                        .forResult(12);
+//                break;
             default:
                 break;
         }
@@ -315,10 +439,10 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
             List<String> mSelected = Matisse.obtainPathResult(data);
 //            Toast.makeText(this, mSelected.get(0), Toast.LENGTH_SHORT).show();
 
-            Glide.with(this)
-                    .load(Matisse.obtainResult(data).get(0))
-                    .into(imgThumb);
-            imgThumb.setVisibility(View.VISIBLE);
+//            Glide.with(this)
+//                    .load(Matisse.obtainResult(data).get(0))
+//                    .into(imgThumb);
+//            imgThumb.setVisibility(View.VISIBLE);
         }
     }
 
@@ -380,7 +504,7 @@ public class AddNewActivity extends AppCompatActivity implements View.OnClickLis
                             lat = location.getLatitude();
                             longi = location.getLongitude();
 
-                            MarkerOptions options= new MarkerOptions().position(latLng).title("I am here");
+                            MarkerOptions options= new MarkerOptions().position(latLng).title("You are here");
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                             googleMap.addMarker(options);
                         }

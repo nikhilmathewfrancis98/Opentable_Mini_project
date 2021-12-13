@@ -48,12 +48,20 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
     DocumentReference mDatabase;
     FirebaseFirestore firestore;
 
+
+    ArrayList<String> locations;
+
     Context context;
     // constructor
     public HomePostAdapter(List<ModalPost> postList, Context context)
     {
         this.firestore = FirebaseFirestore.getInstance();
-        this.postsList = new ArrayList<>(postList);
+        locations = new ArrayList<>();
+        this.postsList = postList;
+        for(ModalPost p : postList) {
+            this.locations.add(p.getLocation());
+        }
+
         this.exampleList = postList;
         this.context = context;
     }
@@ -75,6 +83,15 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
         holder.txt_likes.setText(Integer.toString(exampleList.get(p).getTxt_likes()));
         holder.txt_caption.setText(exampleList.get(p).getTxt_caption());
         holder.txt_tags.setText(exampleList.get(p).getTxt_tags());
+        holder.usrName.setText("Posted by :"+exampleList.get(p).getUserName());
+
+        // to display badge for a post
+        if(exampleList.get(p).getTxt_likes() > 20 && exampleList.get(p).getReportCount()<5)
+        {
+            holder.badge.setVisibility(View.VISIBLE);
+        }
+        else
+            holder.badge.setVisibility(View.INVISIBLE);
 
 //        RequestOptions options =
 //                new RequestOptions()
@@ -176,18 +193,19 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
     }
 
     public class PostViewHolder extends RecyclerView.ViewHolder  {
-        TextView title;
+        TextView title, usrName;
         TextView location;
         ImageView post_image;
         ImageView favorite_outline;
         ImageView favorite_filled;
         ImageView img_comments;
         ImageView img_bookmark;
-        ImageView img_save;
         ImageView option;
         TextView txt_likes;
         TextView txt_caption;
         TextView txt_tags;
+        ImageView badge;
+
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -197,12 +215,13 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             favorite_outline=itemView.findViewById(R.id.img_heart);
             favorite_filled=itemView.findViewById(R.id.img_heart_red);
             img_comments=itemView.findViewById(R.id.img_comments);
-            img_bookmark=itemView.findViewById(R.id.img_bookmark);
-            img_save=itemView.findViewById(R.id.img_save);
+//            img_bookmark=itemView.findViewById(R.id.img_bookmark);
+            badge=itemView.findViewById(R.id.badge);
             option=itemView.findViewById(R.id.option);
             txt_likes=itemView.findViewById(R.id.txt_likes);
             txt_caption=itemView.findViewById(R.id.txt_caption);
             txt_tags=itemView.findViewById(R.id.txt_tags);
+            usrName = itemView.findViewById(R.id.user_name);
         }
     }
 
@@ -271,18 +290,22 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
             List<ModalPost> filteredList = new ArrayList<>();
             String filterPattern = "";
 
+//            Toast.makeText(context, Integer.toString(postsList.size()), Toast.LENGTH_SHORT).show();
             if (constraint == null || constraint.length() == 0) {
-                filteredList.addAll(postsList);
-            } else {
+                filteredList.addAll(HomeActivity.postList);
+
+            }
+            else {
                 filterPattern = constraint.toString().toLowerCase().trim();
 
-                for (ModalPost item : postsList) {
+                for (ModalPost item : HomeActivity.postList) {
                     if (item.getTxt_tags().toLowerCase().contains(filterPattern)
                             || item.getLocation().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }
             }
+
 //            Log.d("hiui", Integer.toString(postsList.size()));
 //            Log.d("hiuii", filterPattern);
             FilterResults results = new FilterResults();
@@ -293,10 +316,16 @@ public class HomePostAdapter extends RecyclerView.Adapter<HomePostAdapter.PostVi
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+//            exampleList = new ArrayList<>();
             exampleList.clear();
             // we are creating new songs list with the help of filtered results
             exampleList.addAll((List) filterResults.values);
             notifyDataSetChanged(); // notify the changes
+
+//            Toast.makeText(context, Integer.toString(postsList.size()), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, Integer.toString(exampleList.size()), Toast.LENGTH_SHORT).show();
+
+
         }
     };
 
